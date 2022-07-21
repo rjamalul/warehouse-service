@@ -49,8 +49,7 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 
 		return null; //Failure, if I receive null back from this function something went wrong.
 	}
-
-
+	
 	@Override
 	public Crate addCrate(Crate crate) {
 		
@@ -116,15 +115,33 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 	}
 	//CHECK THIS updateName()
 	@Override
-	public void updateCrate(Crate crate) {
-		String sql = "SELECT crate SET crateName ='?' WHERE idcrate = ?";
+	public Crate updateCrate(Crate crate) {
+		String sql = "UPDATE crate SET crateSize=?, crateName=?, idWarehouses=? WHERE idcrate=?";
 		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
 			
-//			Statement stmt = conn.updateStatement();
+			//Start a transaction
+			conn.setAutoCommit(false); //prevents each query from immediately altering DB
 			
+			//Obtain auto incremented values like so
+			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			ps.setInt(1, crate.getSize());
+			ps.setString(2, crate.getName());
+			ps.setInt(3, crate.getIdWarehouses());
+			ps.setInt(4, crate.getId());
+			
+			int rowsAffected = ps.executeUpdate(); //If 0 is returned, my data didn't save
+			if (rowsAffected != 0) {				
+				ResultSet keys = ps.getGeneratedKeys();				
+				conn.commit(); //execute all queries in a given transaction 
+				return crate;
+			} else {
+				conn.rollback();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		return null;
 		// TODO Auto-generated method stub
 		
 	}

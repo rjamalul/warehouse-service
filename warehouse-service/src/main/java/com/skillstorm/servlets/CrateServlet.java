@@ -19,14 +19,16 @@ import com.skillstorm.daos.CrateDAO;
 import com.skillstorm.daos.CrateMySQLDAOImpl;
 import com.skillstorm.models.Crate;
 import com.skillstorm.models.NotFound;
+import com.skillstorm.services.URLParserService;
 
 
 //Tomcat will provide implementation for our HttpServlet
-@WebServlet(urlPatterns = "/crates")
+@WebServlet(urlPatterns = "/crates/*")
 public class CrateServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 5795274365670879885L; //re-check if this is my serialVersionUID
 	CrateDAO crateDao = new CrateMySQLDAOImpl();
+	URLParserService urlService = new URLParserService();
 	ObjectMapper objectMapper = new ObjectMapper();
 	
 	@Override
@@ -71,7 +73,17 @@ public class CrateServlet extends HttpServlet {
 		System.out.println(reqBodyStringFormat);
 		
 		Crate newCrate = objectMapper.readValue(reqBodyStringFormat, Crate.class);
-		newCrate = crateDao.addCrate(newCrate);
+		
+		String type = urlService.extractRequestFromURL(req.getPathInfo()); //req.getServletPath() 
+		
+		System.out.println(type);
+		
+		if (type != null && type.equalsIgnoreCase("update")) {
+			System.out.println("UPDATING THIS NOW");
+			newCrate = crateDao.updateCrate(newCrate);
+		} else {
+			newCrate = crateDao.addCrate(newCrate);
+		}		
 		
 		if (newCrate != null) {
 			resp.setContentType("application/json");
