@@ -35,7 +35,7 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 			//Need to advance cursor with it so that you can parse all results
 			while(rs.next()) {
 				//Looping over individual rows of the result set
-				Crate crate = new Crate(rs.getInt("idcrate"), rs.getString("crateName"), rs.getInt("crateSize"));
+				Crate crate = new Crate(rs.getInt("idcrate"), rs.getInt("crateSize"), rs.getString("crateName"), rs.getInt("idWarehouses"));
 				crates.add(crate);
 			} 
 			

@@ -2,19 +2,16 @@ package com.skillstorm.models;
 
 public class Crate {
 	private int id;
+	private int size;
 	private String name;
-	private int Size;
-
-	public Crate() {
+	private int idWarehouses;
 		
+	public Crate(int id, int size, String name, int idWarehouses) {
+		this.id = id;
+		this.name = name;
+		this.size = size;
+		this.idWarehouses = idWarehouses;
 	}
-	
-	public Crate(String name) {
-		
-	}
-	
-	public Crate(int id, String name, int Size) {
-		}
 
 	public int getId() {
 		return id;
@@ -24,6 +21,14 @@ public class Crate {
 		this.id = id;
 	}
 
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -32,18 +37,18 @@ public class Crate {
 		this.name = name;
 	}
 
-	public int getSize() {
-		return Size;
+
+	public int getIdWarehouses() {
+		return idWarehouses;
 	}
 
-	public void setSize(int size) {
-		Size = size;
-	}
-
-	@Override
-	public String toString() {
-		return "Crate [id=" + id + ", name=" + name + ", Size=" + Size + "]";
+	public void setIdWarehouses(int idWarehouses) {
+		this.idWarehouses = idWarehouses;
 	}
 	
-	}
+	@Override
+	public String toString() {
+		return "Crate [id=" + id + ", size=" + size + ", name=" + name + ", idWarehouses=" + idWarehouses + "]";
+	}	
+}
 	
