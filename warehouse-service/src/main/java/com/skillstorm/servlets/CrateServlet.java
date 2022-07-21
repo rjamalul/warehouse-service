@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillstorm.daos.CrateDAO;
 import com.skillstorm.daos.CrateMySQLDAOImpl;
 import com.skillstorm.models.Crate;
@@ -22,6 +23,7 @@ import com.skillstorm.models.Crate;
 public class CrateServlet extends HttpServlet {
 
 	CrateDAO crateDao = new CrateMySQLDAOImpl();
+	ObjectMapper objectMapper = new ObjectMapper();
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -33,8 +35,10 @@ public class CrateServlet extends HttpServlet {
 		crates = crateDao.findAll();
 		
 		PrintWriter responseOutput = resp.getWriter(); //lets us write to our HTTP Request
-		responseOutput.println("{ \"data\" : {} }");
+		String returnStringObject = objectMapper.writeValueAsString(crates);
+		responseOutput.println(returnStringObject);
 		
+//		System.out.println(returnStringObject);
 		System.out.println("I finished running");
 	}
 }
