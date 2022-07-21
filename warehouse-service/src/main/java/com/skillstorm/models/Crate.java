@@ -6,10 +6,12 @@ public class Crate {
 	private String name;
 	private int idWarehouses;
 		
+	public Crate() {}
+	
 	public Crate(int id, int size, String name, int idWarehouses) {
 		this.id = id;
-		this.name = name;
 		this.size = size;
+		this.name = name;
 		this.idWarehouses = idWarehouses;
 	}
 

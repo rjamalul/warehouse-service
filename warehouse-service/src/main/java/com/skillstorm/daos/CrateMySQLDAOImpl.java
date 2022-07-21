@@ -5,8 +5,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.LinkedList;
 import java.util.List;
+
+
 
 import com.skillstorm.conf.WarehousesDbCreds;
 import com.skillstorm.models.Crate;
@@ -47,40 +50,88 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 		return null; //Failure, if I receive null back from this function something went wrong.
 	}
 
-	@Override
-	public Crate findById(int id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
-	public Crate findByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void save(Crate crate) {
+	public Crate addCrate(Crate crate) {
+		
+		//Don't include crateId due to auto-increment
+		String sql = "INSERT INTO crate (crateSize, crateName, idWarehouses) VALUES (?, ?, ?)";
+		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
+			
+			//Start a transaction
+			conn.setAutoCommit(false); //prevents each query from immediately altering DB
+			
+			//Obtain auto incremented values like so
+			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			ps.setInt(1, crate.getSize());
+			ps.setString(2, crate.getName());
+			ps.setInt(3, crate.getIdWarehouses());
+			
+			int rowsAffected = ps.executeUpdate(); //If 0 is returned, my data didn't save
+			if (rowsAffected != 0) {				
+				ResultSet keys = ps.getGeneratedKeys();				
+				conn.commit(); //execute all queries in a given transaction 
+				return crate;
+			} else {
+				conn.rollback();
+			}
+			System.out.println("addCrate Ended");
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null; //this was return crate but I changed it to null to match his code
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void updateName(Crate crate) {
+	public void deleteCrate(int id) {
+		String sql = "DELETE FROM crate WHERE idCrate = ?";
+		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
+
+			// Start a transaction
+			conn.setAutoCommit(false); // prevents each query from immediately altering DB
+
+			PreparedStatement ps = conn.prepareStatement(sql);
+
+			ps.setInt(1, id);
+
+			int rowsAffected = ps.executeUpdate(); // If 0 is returned, my data didn't save
+			if (rowsAffected != 0) {
+
+				conn.commit(); // execute all queries in a given transaction
+				return;
+			} else {
+				conn.rollback();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return;
+		// TODO Auto-generated method stub
+
+	}
+	//CHECK THIS updateName()
+	@Override
+	public void updateCrate(Crate crate) {
+		String sql = "SELECT crate SET crateName ='?' WHERE idcrate = ?";
+		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
+			
+//			Statement stmt = conn.updateStatement();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public void delete(Crate crate) {
-		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void delete(int id) {
-		// TODO Auto-generated method stub
-		
-	}
+
+	
+
 
 }
