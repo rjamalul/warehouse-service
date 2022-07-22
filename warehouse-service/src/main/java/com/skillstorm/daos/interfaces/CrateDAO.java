@@ -7,10 +7,10 @@ import com.skillstorm.models.Crate;
 public interface CrateDAO {
 
 	public List<Crate> findAll();
-	public Crate getCratesById(int crateId);
+	public Crate getCrateById(int crateId);
 	public Crate addCrate(Crate crate);
 	public Crate updateCrate(Crate crate); 
-	public void deleteCrate(int id);
+	public void deleteCrate(int id, int warehouseId);
 	public List<Crate> getCratesByWarehouseId(int warehouseId);
 	
 }

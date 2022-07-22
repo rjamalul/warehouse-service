@@ -105,7 +105,8 @@ public class CrateServlet extends HttpServlet {
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String id = req.getParameter("id");
-		crateDao.deleteCrate(Integer.parseInt(id));
+		String warehouseId = req.getParameter("warehouseId");
+		crateDao.deleteCrate(Integer.parseInt(id), Integer.parseInt(warehouseId));
 	}
 	
 	// Utiltiy function for Converting InputStream to String

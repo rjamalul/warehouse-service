@@ -13,9 +13,13 @@ import java.util.List;
 
 import com.skillstorm.conf.WarehousesDbCreds;
 import com.skillstorm.daos.interfaces.CrateDAO;
+import com.skillstorm.daos.interfaces.WarehouseDAO;
 import com.skillstorm.models.Crate;
+import com.skillstorm.models.Warehouse;
 
 public class CrateDAOImpl implements CrateDAO {
+	
+	WarehouseDAO warehouseDAO = new WarehouseDAOImpl();
 
 	/**
 	 * @return the list of artists from the DB is successful, print null if failed.
@@ -84,7 +88,7 @@ public class CrateDAOImpl implements CrateDAO {
 	}
 	
 	@Override
-	public Crate getCratesById(int crateId) {
+	public Crate getCrateById(int crateId) {
 		String sql = "SELECT * FROM crates WHERE crateId = ";
 		
 		//Connection will auto close in event of failure due to auto-closeable
@@ -94,10 +98,7 @@ public class CrateDAOImpl implements CrateDAO {
 
 			//Executing the query returns a ResultSet which contains all of the values returned			
 			ResultSet rs = stmt.executeQuery(sql + String.valueOf(crateId));
-			
-			//Executing the query returns a ResultSet which contains all of the values returned						
-			LinkedList<Crate> crates = new LinkedList<>();
-			
+						
 			Crate crate = null;
 			
 			//next() returns a boolean on whether the iterator is done yet
@@ -107,7 +108,7 @@ public class CrateDAOImpl implements CrateDAO {
 				crate = new Crate(rs.getInt("crateId"), rs.getString("crateName"),  rs.getInt("crateSize"), rs.getInt("warehouseId"));
 			} 
 			
-			return crate ;
+			return crate;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -153,7 +154,7 @@ public class CrateDAOImpl implements CrateDAO {
 	}
 
 	@Override
-	public void deleteCrate(int id) {
+	public void deleteCrate(int id, int warehouseId) {
 		String sql = "DELETE FROM crates WHERE crateId = ?";
 		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
 
@@ -166,6 +167,9 @@ public class CrateDAOImpl implements CrateDAO {
 
 			int rowsAffected = ps.executeUpdate(); // If 0 is returned, my data didn't save
 			if (rowsAffected != 0) {
+				Crate crate = getCrateById(id);
+				Warehouse warehouse = warehouseDAO.getWarehouseById(warehouseId);
+				warehouseDAO.updateWarehouseCurrentCapacity(warehouseId, warehouse.getCurrentCapacity() - crate.getCrateSize());
 				conn.commit(); // execute all queries in a given transaction
 				return;
 			} else {
