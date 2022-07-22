@@ -22,7 +22,7 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 	
 	@Override
 	public List<Crate> findAll() {
-		String sql = "SELECT * FROM crate";
+		String sql = "SELECT * FROM crates";
 		
 		//Connection will auto close in event of failure due to auto-closeable
 		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
@@ -38,7 +38,7 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 			//Need to advance cursor with it so that you can parse all results
 			while(rs.next()) {
 				//Looping over individual rows of the result set
-				Crate crate = new Crate(rs.getInt("idcrate"), rs.getInt("crateSize"), rs.getString("crateName"), rs.getInt("idWarehouses"));
+				Crate crate = new Crate(rs.getInt("crateId"), rs.getString("crateName"),  rs.getInt("crateSize"), rs.getInt("warehouseId"));
 				crates.add(crate);
 			} 
 			
@@ -54,7 +54,7 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 	public Crate addCrate(Crate crate) {
 		
 		//Don't include crateId due to auto-increment
-		String sql = "INSERT INTO crate (crateSize, crateName, idWarehouses) VALUES (?, ?, ?)";
+		String sql = "INSERT INTO crates (crateName, crateSize, warehouseId) VALUES (?, ?, ?)";
 		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
 			
 			//Start a transaction
@@ -62,9 +62,9 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 			
 			//Obtain auto incremented values like so
 			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			ps.setInt(1, crate.getSize());
-			ps.setString(2, crate.getName());
-			ps.setInt(3, crate.getIdWarehouses());
+			ps.setString(1, crate.getCrateName());
+			ps.setInt(2, crate.getCrateSize());
+			ps.setInt(3, crate.getWarehouseId());
 			
 			int rowsAffected = ps.executeUpdate(); //If 0 is returned, my data didn't save
 			if (rowsAffected != 0) {				
@@ -87,7 +87,7 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 
 	@Override
 	public void deleteCrate(int id) {
-		String sql = "DELETE FROM crate WHERE idCrate = ?";
+		String sql = "DELETE FROM crates WHERE crateId = ?";
 		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
 
 			// Start a transaction
@@ -99,7 +99,6 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 
 			int rowsAffected = ps.executeUpdate(); // If 0 is returned, my data didn't save
 			if (rowsAffected != 0) {
-
 				conn.commit(); // execute all queries in a given transaction
 				return;
 			} else {
@@ -113,10 +112,11 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 		// TODO Auto-generated method stub
 
 	}
+	
 	//CHECK THIS updateName()
 	@Override
 	public Crate updateCrate(Crate crate) {
-		String sql = "UPDATE crate SET crateSize=?, crateName=?, idWarehouses=? WHERE idcrate=?";
+		String sql = "UPDATE crates SET crateName=?, crateSize=?, warehouseId=? WHERE crateId=?";
 		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
 			
 			//Start a transaction
@@ -124,10 +124,10 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 			
 			//Obtain auto incremented values like so
 			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			ps.setInt(1, crate.getSize());
-			ps.setString(2, crate.getName());
-			ps.setInt(3, crate.getIdWarehouses());
-			ps.setInt(4, crate.getId());
+			ps.setString(1, crate.getCrateName());
+			ps.setInt(2, crate.getCrateSize());
+			ps.setInt(3, crate.getWarehouseId());
+			ps.setInt(4, crate.getCrateId());
 			
 			int rowsAffected = ps.executeUpdate(); //If 0 is returned, my data didn't save
 			if (rowsAffected != 0) {				
@@ -142,8 +142,7 @@ public class CrateMySQLDAOImpl implements CrateDAO {
 		}
 		
 		return null;
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 
