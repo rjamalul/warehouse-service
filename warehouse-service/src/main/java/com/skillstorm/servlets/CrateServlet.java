@@ -20,6 +20,7 @@ import com.skillstorm.daos.CrateDAOImpl;
 import com.skillstorm.models.Crate;
 import com.skillstorm.models.NotFound;
 import com.skillstorm.services.URLParserService;
+import com.skillstorm.services.CrateService;
 
 //Tomcat will provide implementation for our HttpServlet
 @WebServlet(urlPatterns = "/crates/*")
@@ -27,6 +28,7 @@ public class CrateServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 5795274365670879885L; //re-check if this is my serialVersionUID
 	CrateDAO crateDao = new CrateDAOImpl();
+	CrateService crateService = new CrateService();
 	URLParserService urlService = new URLParserService();
 	ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -84,15 +86,8 @@ public class CrateServlet extends HttpServlet {
 		
 		String type = urlService.extractRequestFromURL(req.getPathInfo()); //req.getServletPath() 
 		
-		System.out.println(type);
-		
-		if (type != null && type.equalsIgnoreCase("update")) {
-			System.out.println("UPDATING THIS NOW");
-			newCrate = crateDao.updateCrate(newCrate);
-		} else {
-			newCrate = crateDao.addCrate(newCrate);
-		}		
-		
+		newCrate = crateService.checkIfMaxCapacityIsHit(type, newCrate);
+				
 		if (newCrate != null) {
 			resp.setContentType("application/json");
 			resp.getWriter().print(objectMapper.writeValueAsString(newCrate));

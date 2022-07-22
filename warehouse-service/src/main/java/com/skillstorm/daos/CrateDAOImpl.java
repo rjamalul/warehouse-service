@@ -84,6 +84,40 @@ public class CrateDAOImpl implements CrateDAO {
 	}
 	
 	@Override
+	public Crate getCratesById(int crateId) {
+		String sql = "SELECT * FROM crates WHERE crateId = ";
+		
+		//Connection will auto close in event of failure due to auto-closeable
+		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
+			//Create a Statement using the Connection object
+			Statement stmt = conn.createStatement();
+
+			//Executing the query returns a ResultSet which contains all of the values returned			
+			ResultSet rs = stmt.executeQuery(sql + String.valueOf(crateId));
+			
+			//Executing the query returns a ResultSet which contains all of the values returned						
+			LinkedList<Crate> crates = new LinkedList<>();
+			
+			Crate crate = null;
+			
+			//next() returns a boolean on whether the iterator is done yet
+			//Need to advance cursor with it so that you can parse all results
+			if(rs.next()) {
+				//Looping over individual rows of the result set
+				crate = new Crate(rs.getInt("crateId"), rs.getString("crateName"),  rs.getInt("crateSize"), rs.getInt("warehouseId"));
+			} 
+			
+			return crate ;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null; //Failure, if I receive null back from this function something went wrong.
+		
+	}
+
+	
+	@Override
 	public Crate addCrate(Crate crate) {
 		
 		//Don't include crateId due to auto-increment
