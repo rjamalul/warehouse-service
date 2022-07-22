@@ -14,7 +14,7 @@ public class CrateService {
 	public Crate checkIfMaxCapacityIsHit(String type, Crate newCrate) {
 		Warehouse warehouse = warehouseDao.getWarehouseById(newCrate.getWarehouseId());
 		Crate oldCrate = crateDao.getCrateById(newCrate.getCrateId());
-		if (warehouse.getCurrentCapacity() + newCrate.getCrateSize() < warehouse.getMaxCapacity() || (type != null && type.equalsIgnoreCase("update") && ((warehouse.getCurrentCapacity() - oldCrate.getCrateSize() + newCrate.getCrateSize()) < warehouse.getMaxCapacity()))) {
+		if (warehouse.getCurrentCapacity() + newCrate.getCrateSize() <= warehouse.getMaxCapacity() || (type != null && type.equalsIgnoreCase("update") && ((warehouse.getCurrentCapacity() - oldCrate.getCrateSize() + newCrate.getCrateSize()) <= warehouse.getMaxCapacity()))) {
 			if (type != null && type.equalsIgnoreCase("update")) {
 				System.out.println("UPDATING THIS NOW");
 				newCrate = crateDao.updateCrate(newCrate);
