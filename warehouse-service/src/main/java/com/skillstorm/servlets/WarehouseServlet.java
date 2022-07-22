@@ -15,18 +15,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skillstorm.daos.interfaces.CrateDAO;
-import com.skillstorm.daos.CrateDAOImpl;
+import com.skillstorm.daos.interfaces.WarehouseDAO;
+import com.skillstorm.daos.WarehouseDAOImpl;
 import com.skillstorm.models.Crate;
 import com.skillstorm.models.NotFound;
+import com.skillstorm.models.Warehouse;
 import com.skillstorm.services.URLParserService;
 
 //Tomcat will provide implementation for our HttpServlet
-@WebServlet(urlPatterns = "/crates/*")
-public class CrateServlet extends HttpServlet {
+@WebServlet(urlPatterns = "/warehouses/*")
+public class WarehouseServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 5795274365670879885L; //re-check if this is my serialVersionUID
-	CrateDAO crateDao = new CrateDAOImpl();
+	WarehouseDAO warehouseDao = new WarehouseDAOImpl();
 	URLParserService urlService = new URLParserService();
 	ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -49,24 +50,15 @@ public class CrateServlet extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		List<Crate> crates = new ArrayList<Crate>(); 
+		List<Warehouse> warehouses = new ArrayList<Warehouse>(); 
 		
 		System.out.println("GET method called");
 		
-		String id = req.getParameter("id");
-		System.out.println(id);
-
-		String type = urlService.extractRequestFromURL(req.getPathInfo());
-		System.out.println(type);
 		
-		if (type != null && type.equalsIgnoreCase("warehouse")) {
-			crates = crateDao.getCratesByWarehouseId(Integer.parseInt(id));
-		} else {
-			crates = crateDao.findAll();
-		}
+		warehouses = warehouseDao.getWarehouses();
 		
 		PrintWriter responseOutput = resp.getWriter(); //lets us write to our HTTP Request
-		String returnStringObject = objectMapper.writeValueAsString(crates);
+		String returnStringObject = objectMapper.writeValueAsString(warehouses);
 		responseOutput.println(returnStringObject);
 		
 		System.out.println("I finished running");
@@ -75,42 +67,35 @@ public class CrateServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
-		InputStream reqBody = req.getInputStream();
-		String reqBodyStringFormat = convertInputStreamToString(reqBody);
+//		InputStream reqBody = req.getInputStream();
+//		String reqBodyStringFormat = convertInputStreamToString(reqBody);
+//		
+//		System.out.println(reqBodyStringFormat);
+//		
+//		Crate newCrate = objectMapper.readValue(reqBodyStringFormat, Crate.class);
+//		
+//		String type = urlService.extractRequestFromURL(req.getPathInfo()); //req.getServletPath() 
+//		
+//		System.out.println(type);
+//		
+//		if (type != null && type.equalsIgnoreCase("update")) {
+//			System.out.println("UPDATING THIS NOW");
+//			newCrate = crateDao.updateCrate(newCrate);
+//		} else {
+//			newCrate = crateDao.addCrate(newCrate);
+//		}		
+//		
+//		if (newCrate != null) {
+//			resp.setContentType("application/json");
+//			resp.getWriter().print(objectMapper.writeValueAsString(newCrate));
+//			resp.setStatus(201); // The default is 200
+//		} else {
+//			resp.setStatus(400);
+//			resp.getWriter().print(objectMapper.writeValueAsString(new NotFound("Unable to create crate")));
+//		}
+//		
+//		System.out.println("Finished POST");
 		
-		System.out.println(reqBodyStringFormat);
-		
-		Crate newCrate = objectMapper.readValue(reqBodyStringFormat, Crate.class);
-		
-		String type = urlService.extractRequestFromURL(req.getPathInfo()); //req.getServletPath() 
-		
-		System.out.println(type);
-		
-		if (type != null && type.equalsIgnoreCase("update")) {
-			System.out.println("UPDATING THIS NOW");
-			newCrate = crateDao.updateCrate(newCrate);
-		} else {
-			newCrate = crateDao.addCrate(newCrate);
-		}		
-		
-		if (newCrate != null) {
-			resp.setContentType("application/json");
-			resp.getWriter().print(objectMapper.writeValueAsString(newCrate));
-			resp.setStatus(201); // The default is 200
-		} else {
-			resp.setStatus(400);
-			resp.getWriter().print(objectMapper.writeValueAsString(new NotFound("Unable to create crate")));
-		}
-		
-		System.out.println("Finished POST");
-		
-	}
-		
-		
-	@Override
-	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String id = req.getParameter("id");
-		crateDao.deleteCrate(Integer.parseInt(id));
 	}
 	
 	// Utiltiy function for Converting InputStream to String

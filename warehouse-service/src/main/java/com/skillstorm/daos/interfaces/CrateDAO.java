@@ -1,7 +1,6 @@
-package com.skillstorm.daos;
+package com.skillstorm.daos.interfaces;
 
 import java.util.List;
-
 import com.skillstorm.models.Crate;
 
 //Queries specific to Crates
@@ -11,5 +10,6 @@ public interface CrateDAO {
 	public Crate addCrate(Crate crate);
 	public Crate updateCrate(Crate crate); //might not match for artist ex
 	public void deleteCrate(int id);
+	public List<Crate> getCratesByWarehouseId(int warehouseId);
 	
 }

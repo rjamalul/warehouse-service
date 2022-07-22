@@ -2,8 +2,8 @@ package com.skillstorm;
 
 import java.util.List;
 
-import com.skillstorm.daos.CrateDAO;
-import com.skillstorm.daos.CrateMySQLDAOImpl;
+import com.skillstorm.daos.CrateDAOImpl;
+import com.skillstorm.daos.interfaces.CrateDAO;
 import com.skillstorm.models.Crate;
 
 public class Driver {
@@ -19,7 +19,7 @@ public class Driver {
 	
 	//Below is him commenting above out to test if we're connected to DB
 	public static void main(String[] args) {
-		CrateDAO dao = new CrateMySQLDAOImpl();
+		CrateDAO dao = new CrateDAOImpl();
 		
 		List<Crate> crates = dao.findAll();
 		System.out.println(crates);

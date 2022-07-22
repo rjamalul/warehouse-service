@@ -1,5 +1,4 @@
 package com.skillstorm.daos;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -10,13 +9,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.skillstorm.conf.WarehousesDbCreds;
+import com.skillstorm.daos.interfaces.WarehouseDAO;
 import com.skillstorm.models.Warehouse;
 
-public class WarehouseMySQLDAOImpl implements WarehouseDAO {
-
+public class WarehouseDAOImpl implements WarehouseDAO {
 	
 	@Override
-	public List<Warehouse> findAll() {
+	public Warehouse getWarehouseById() {
 //		String sql = "SELECT * FROM crate";
 //		
 //		//Connection will auto close in event of failure due to auto-closeable
@@ -33,7 +32,7 @@ public class WarehouseMySQLDAOImpl implements WarehouseDAO {
 //			//Need to advance cursor with it so that you can parse all results
 //			while(rs.next()) {
 //				//Looping over individual rows of the result set
-//				Warehouse crate = new Warehouse(rs.getInt("idWarehouses"), rs.getInt("currentCapacity"), rs.getString("maxCapacity"), rs.getInt("idWarehouses"));
+//				Warehouse crate = new Warehouse(rs.getInt("warehouseId"), rs.getInt("currentCapacity"), rs.getString("maxCapacity"), rs.getInt("idWarehouses"));
 //				crates.add(crate);
 //			} 
 //			
@@ -42,6 +41,36 @@ public class WarehouseMySQLDAOImpl implements WarehouseDAO {
 //			e.printStackTrace();
 //		}
 //
+		return null; //Failure, if I receive null back from this function something went wrong.
+	}
+	
+	@Override
+	public List<Warehouse> getWarehouses() {
+		String sql = "SELECT * FROM warehouses";
+		
+		//Connection will auto close in event of failure due to auto-closeable
+		try (Connection conn = WarehousesDbCreds.getInstance().getConnection()) {
+			//Create a Statement using the Connection object
+			Statement stmt = conn.createStatement();
+			
+			//Executing the query returns a ResultSet which contains all of the values returned
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			LinkedList<Warehouse> warehouses = new LinkedList<>();
+			
+			//next() returns a boolean on whether the iterator is done yet
+			//Need to advance cursor with it so that you can parse all results
+			while(rs.next()) {
+				//Looping over individual rows of the result set
+				Warehouse warehouse = new Warehouse(rs.getInt("warehouseId"), rs.getString("warehouseName") ,rs.getInt("currentCapacity"), rs.getInt("maxCapacity"));
+				warehouses.add(warehouse);
+			}
+			
+			return warehouses;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 		return null; //Failure, if I receive null back from this function something went wrong.
 	}
 //	
