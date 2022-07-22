@@ -23,7 +23,11 @@ public class CrateService {
 			}
 			
 			if (newCrate != null) {
-				warehouseDao.updateWarehouseCurrentCapacity(newCrate.getWarehouseId(), newCrate.getCrateSize());
+				int oldCrateSize = 0;
+				if (oldCrate != null && type != null && type.equalsIgnoreCase("update")) {
+					oldCrateSize = oldCrate.getCrateSize();
+				}
+				warehouseDao.updateWarehouseCurrentCapacity(newCrate.getWarehouseId(), warehouse.getCurrentCapacity() - oldCrateSize + newCrate.getCrateSize());
 			}
 		} else {
 			return null;
