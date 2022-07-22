@@ -58,12 +58,12 @@ public class CrateServlet extends HttpServlet {
 		String id = req.getParameter("id");
 		System.out.println(id);
 
-		String type = urlService.extractRequestFromURL(req.getPathInfo());
+		String type = urlService.extractRequestFromURL(req.getPathInfo()); 
 		System.out.println(type);
 		
-		if (type != null && type.equalsIgnoreCase("warehouse")) {
+		if (type != null && type.equalsIgnoreCase("warehouse")) { //this indicates look for only crates in a particular warehouse
 			crates = crateDao.getCratesByWarehouseId(Integer.parseInt(id));
-		} else {
+		} else { // Else find all crates
 			crates = crateDao.findAll();
 		}
 		
@@ -84,9 +84,9 @@ public class CrateServlet extends HttpServlet {
 		
 		Crate newCrate = objectMapper.readValue(reqBodyStringFormat, Crate.class);
 		
-		String type = urlService.extractRequestFromURL(req.getPathInfo()); //req.getServletPath() 
+		String type = urlService.extractRequestFromURL(req.getPathInfo()); 
 		
-		newCrate = crateService.checkIfMaxCapacityIsHit(type, newCrate);
+		newCrate = crateService.checkIfMaxCapacityIsHit(type, newCrate); //use crateService to determine if Max Capacity is Hit
 				
 		if (newCrate != null) {
 			resp.setContentType("application/json");

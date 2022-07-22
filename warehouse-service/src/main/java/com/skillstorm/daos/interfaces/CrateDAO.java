@@ -9,7 +9,7 @@ public interface CrateDAO {
 	public List<Crate> findAll();
 	public Crate getCratesById(int crateId);
 	public Crate addCrate(Crate crate);
-	public Crate updateCrate(Crate crate); //might not match for artist ex
+	public Crate updateCrate(Crate crate); 
 	public void deleteCrate(int id);
 	public List<Crate> getCratesByWarehouseId(int warehouseId);
 	
